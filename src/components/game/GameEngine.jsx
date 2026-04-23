@@ -99,14 +99,37 @@ export default function GameEngine({ stage }) {
   }, [currentIndex, status, currentItem, stage]);
 
   // 2.5 Управление с клавиатуры на финальном экране
+  // useEffect(() => {
+  //   if (status === 'stage_completed') {
+  //     const handleKeyDown = (e) => {
+  //       if (e.code === 'Enter') {
+  //         e.preventDefault();
+  //         window.location.reload(); // Перезапуск игры
+  //       } else if (e.code === 'Space') {
+  //         e.preventDefault(); // Чтобы страница не прыгала вниз
+  //         router.push('/games/select'); // Выход в меню
+  //       }
+  //     };
+
+  //     window.addEventListener('keydown', handleKeyDown);
+  //     return () => window.removeEventListener('keydown', handleKeyDown);
+  //   }
+  // }, [status, router]);
   useEffect(() => {
     if (status === 'stage_completed') {
       const handleKeyDown = (e) => {
         if (e.code === 'Enter') {
           e.preventDefault();
-          window.location.reload(); // Перезапуск игры
+          
+          if (stage === 3) {
+            // 3-кезеңнен кейін бас мәзірге қайтарады
+            router.push('/games/select'); 
+          } else {
+            // Келесі кезеңге өту (МЫНА ЖЕРДЕГІ СІЛТЕМЕНІ ӨЗ ПАПКАҢА САЙ ТЕКСЕРІП АЛ)
+            router.push(`/games/play/${stage + 1}`); 
+          }
         } else if (e.code === 'Space') {
-          e.preventDefault(); // Чтобы страница не прыгала вниз
+          e.preventDefault(); 
           router.push('/games/select'); // Выход в меню
         }
       };
@@ -114,7 +137,7 @@ export default function GameEngine({ stage }) {
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [status, router]);
+  }, [status, stage, router]);
 
   useEffect(() => {
     if (status === 'success_mini') {
@@ -285,6 +308,23 @@ export default function GameEngine({ stage }) {
   );
 
   // ЭКРАН 5: Итоговые результаты
+  // if (status === 'stage_completed') return (
+  //   <div className="bg-white p-16 rounded-[40px] shadow-xl text-center border border-gray-100 flex flex-col items-center animate-fade-in">
+  //     <h2 className="text-4xl font-light text-brand-purple mb-6">{stage}-Кезең нәтиже</h2>
+  //     <p className="text-3xl font-light text-brand-purple mb-12">
+  //       {Math.round((stats.correct / stats.total) * 100)}% / 100% or {stats.correct} сұрақ / {stats.total} сұрақ
+  //     </p>
+  //     <div className="flex gap-6">
+  //       <button onClick={() => router.push('/games/select')} className="bg-brand-purple hover:bg-brand-dark text-white font-bold py-4 px-10 rounded-full text-lg uppercase transition-all">
+  //         Аяқтайық (Space)
+  //       </button>
+  //       <button onClick={() => window.location.reload()} className="bg-brand-purple hover:bg-brand-dark text-white font-bold py-4 px-10 rounded-full text-lg uppercase transition-all">
+  //         Қайталау (Enter)
+  //       </button>
+  //     </div>
+  //   </div>
+  // );
+  // ЭКРАН 5: Итоговые результаты
   if (status === 'stage_completed') return (
     <div className="bg-white p-16 rounded-[40px] shadow-xl text-center border border-gray-100 flex flex-col items-center animate-fade-in">
       <h2 className="text-4xl font-light text-brand-purple mb-6">{stage}-Кезең нәтиже</h2>
@@ -292,11 +332,26 @@ export default function GameEngine({ stage }) {
         {Math.round((stats.correct / stats.total) * 100)}% / 100% or {stats.correct} сұрақ / {stats.total} сұрақ
       </p>
       <div className="flex gap-6">
-        <button onClick={() => router.push('/games/select')} className="bg-brand-purple hover:bg-brand-dark text-white font-bold py-4 px-10 rounded-full text-lg uppercase transition-all">
-          Аяқтайық (Space)
+        {/* Бос орын батырмасы (Space) - Мәзірге шығу */}
+        <button 
+          onClick={() => router.push('/games/select')} 
+          className="bg-brand-purple hover:bg-brand-dark text-white font-bold py-4 px-10 rounded-full text-lg uppercase transition-all"
+        >
+          Мәзірге шығу (Space)
         </button>
-        <button onClick={() => window.location.reload()} className="bg-brand-purple hover:bg-brand-dark text-white font-bold py-4 px-10 rounded-full text-lg uppercase transition-all">
-          Қайталау (Enter)
+        
+        {/* Enter батырмасы - Кезеңге байланысты өзгереді */}
+        <button 
+          onClick={() => {
+            if (stage === 3) {
+              router.push('/games/select');
+            } else {
+              router.push(`/games/${stage + 1}`); // Мұнда да сілтемені тексер
+            }
+          }} 
+          className="bg-brand-purple hover:bg-brand-dark text-white font-bold py-4 px-10 rounded-full text-lg uppercase transition-all"
+        >
+          {stage === 3 ? 'Аяқтау (Enter)' : 'Келесі кезең (Enter)'}
         </button>
       </div>
     </div>
