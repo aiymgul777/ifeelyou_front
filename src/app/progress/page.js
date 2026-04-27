@@ -88,6 +88,8 @@ export default function ProgressPage() {
   const handleNextStage = () => setSelectedStage(prev => prev === '3' ? '1' : String(Number(prev) + 1));
   const handlePrevStage = () => setSelectedStage(prev => prev === '1' ? '3' : String(Number(prev) - 1));
 
+
+  
   return (
     <div className="max-w-7xl mx-auto px-10 py-10 animate-fade-in">
       
